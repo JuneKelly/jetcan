@@ -1,3 +1,3 @@
 # jetcan
 
-A client for [jetcan-server](https://github.com/ShaneKilkelly/jetcan-server).
+A CLI client for [jetcan-server](https://github.com/ShaneKilkelly/jetcan-server).
