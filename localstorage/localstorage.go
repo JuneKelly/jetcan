@@ -4,56 +4,43 @@ import (
 	"os"
 	"os/user"
 	"path/filepath"
-	"fmt"
 )
 
 const DIRECTORY	string = ".jetcan.d"
 
-func userHomeDir() (string, error) {
-	u, err := user.Current()
+// helper, get the FileMode for a path
+func getMode(path string) (os.FileMode, error) {
+	var fi	os.FileInfo
+	var err	error
+
+	fi, err = os.Stat(path)
 	if err != nil {
-		return "", err
-	} else {
-		return u.HomeDir, nil
+		return 0, err
 	}
+
+	return fi.Mode(), nil
 }
 
-func exists() (bool, error) {
-	var homeDir	string
-	var path	string
-	var err		error
-
-	homeDir, err = userHomeDir()
-	if err != nil {
-		return false, err
-	}
-
-	path = filepath.Join(homeDir, DIRECTORY)
-
-    _, err = os.Stat(path)
-    if err == nil {
-		return true, nil
-	}
-    if os.IsNotExist(err) {
-		return false, nil
-	}
-    return false, err
-}
-
+// Ensure that the storage directory exists under the
+// current users home directory
 func createStorageDir() error {
-	var homeDir	string
-	var path	string
-	var err		error
+	var currentUser	*user.User
+	var path		string
+	var permissions	os.FileMode
+	var err			error
 
-	homeDir, err = userHomeDir()
+	currentUser, err = user.Current()
 	if err != nil {
 		return err
 	}
-	path = filepath.Join(homeDir, DIRECTORY)
 
-	fmt.Println("Creating local storage direcotory", path)
+	path = filepath.Join(currentUser.HomeDir, DIRECTORY)
+	permissions, err = getMode(currentUser.HomeDir)
+	if err != nil {
+		return err
+	}
 
-	err = os.Mkdir(path, os.ModeDir)
+	err = os.MkdirAll(path, permissions)
 	if err != nil {
 		return err
 	}
@@ -61,20 +48,14 @@ func createStorageDir() error {
 	return nil
 }
 
+// Initialize local storage
 func Initialize() error {
-	var storageExists	bool
 	var err				error
 
-	storageExists, err = exists()
+	err = createStorageDir()
 	if err != nil {
 		return err
 	}
 
-	if !storageExists {
-		err = createStorageDir()
-		if err != nil {
-			return err
-		}
-	}
 	return nil
 }
