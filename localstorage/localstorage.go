@@ -9,16 +9,17 @@ import (
 const DIRECTORY	string = ".jetcan.d"
 
 // helper, get the FileMode for a path
-func getMode(path string) (os.FileMode, error) {
+func getMode(path string) (mode os.FileMode, err error) {
 	var fi	os.FileInfo
-	var err	error
 
 	fi, err = os.Stat(path)
 	if err != nil {
 		return 0, err
 	}
 
-	return fi.Mode(), nil
+	mode = fi.Mode()
+
+	return
 }
 
 // Ensure that the storage directory exists under the
