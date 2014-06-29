@@ -74,8 +74,6 @@ func Initialize() error {
 		err = createStorageDir()
 		if err != nil {
 			return err
-		} else {
-			return nil
 		}
 	}
 	return nil
