@@ -8,11 +8,36 @@ import (
 	"os"
 )
 
-func handler(c *cli.Context) {
-	fmt.Println("this is jetcan")
+type Jetcan struct {
+	Config	*config.Config
 }
 
-func initApp() (app *cli.App, err error) {
+func NewJetcan() (*Jetcan, error) {
+	j := &Jetcan{}
+
+	cfg, err := config.Load()
+	if err != nil {
+		return nil, err
+	}
+	j.Config = cfg
+
+	err = localstorage.Initialize()
+	if err != nil {
+		return nil, err
+	}
+	return j, nil
+}
+
+func handler(c *cli.Context) {
+	jetcan, err := NewJetcan()
+	if err != nil {
+		fmt.Println("ERROR", err)
+		os.Exit(1)
+	}
+	fmt.Println("\nthis is jetcan", jetcan.Config, "\n")
+}
+
+func initCliApp() (app *cli.App, err error) {
 
 	app = cli.NewApp()
 
@@ -20,21 +45,11 @@ func initApp() (app *cli.App, err error) {
 	app.Version = "0.1.0"
 	app.Action = handler
 
-	cfg, err := config.Load()
-	if err != nil {
-		return nil, err
-	}
-	fmt.Println("Config loaded", *cfg)
-
-	err = localstorage.Initialize()
-	if err != nil {
-		return nil, err
-	}
 	return app, nil
 }
 
 func main() {
-	app , err := initApp()
+	app , err := initCliApp()
 	if err != nil {
 		fmt.Println("ERROR", err)
 		os.Exit(1)

@@ -31,7 +31,6 @@ func Load() (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(configFile)
 
 	f, err := ioutil.ReadFile(configFile)
 	if err != nil {
