@@ -10,8 +10,8 @@ import (
 )
 
 type Config struct {
-	ServiceUri	string
-	StorageDir	string
+	ServiceUri	string `json:"serviceUri"`
+	StorageDir	string `json:"storageDir"`
 }
 
 func findConfigFile() (string, error) {

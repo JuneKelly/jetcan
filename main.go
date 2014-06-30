@@ -13,6 +13,7 @@ func handler(c *cli.Context) {
 }
 
 func initApp() (app *cli.App, err error) {
+
 	app = cli.NewApp()
 
 	app.Name = "jetcan"
