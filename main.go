@@ -21,7 +21,7 @@ func NewJetcan() (*Jetcan, error) {
 	}
 	j.Config = cfg
 
-	err = localstorage.Initialize()
+	err = localstorage.Initialize(j.Config)
 	if err != nil {
 		return nil, err
 	}

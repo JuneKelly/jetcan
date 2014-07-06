@@ -2,11 +2,11 @@ package localstorage
 
 import (
 	"os"
-	"os/user"
 	"path/filepath"
+	"github.com/ShaneKilkelly/jetcan/config"
 )
 
-const DIRECTORY	string = ".jetcan.d"
+const DEFAULT_DIRECTORY	string = ".jetcan.d"
 
 // helper, get the FileMode for a path
 func getMode(path string) (mode os.FileMode, err error) {
@@ -24,24 +24,35 @@ func getMode(path string) (mode os.FileMode, err error) {
 
 // Ensure that the storage directory exists under the
 // current users home directory
-func createStorageDir() error {
-	var currentUser	*user.User
-	var path		string
+func createStorageDir(cfg *config.Config) error {
+	var storageDir	string
+	var parentDir	string
+	var fullPath	string
 	var permissions	os.FileMode
 	var err			error
 
-	currentUser, err = user.Current()
+	if cfg.StorageDir != "" {
+		storageDir, err = filepath.Abs(cfg.StorageDir)
+		if err != nil {
+			return err
+		}
+	} else {
+		storageDir = DEFAULT_DIRECTORY
+	}
+
+	fullPath = filepath.Join(storageDir)
+	parentDir = filepath.Join(storageDir, "..")
+
+	// this is a poor hack to just assign the mode of the parent dir
+	// which will work presuming the user has correct
+	// permissions on the parent dir.
+	// TODO: figure out what permissions this dir should have
+	permissions, err = getMode(parentDir)
 	if err != nil {
 		return err
 	}
 
-	path = filepath.Join(currentUser.HomeDir, DIRECTORY)
-	permissions, err = getMode(currentUser.HomeDir)
-	if err != nil {
-		return err
-	}
-
-	err = os.MkdirAll(path, permissions)
+	err = os.MkdirAll(fullPath, permissions)
 	if err != nil {
 		return err
 	}
@@ -50,10 +61,10 @@ func createStorageDir() error {
 }
 
 // Initialize local storage
-func Initialize() error {
+func Initialize(cfg *config.Config) error {
 	var err				error
 
-	err = createStorageDir()
+	err = createStorageDir(cfg)
 	if err != nil {
 		return err
 	}
