@@ -14,6 +14,10 @@ type Config struct {
 	StorageDir	string `json:"storageDir"`
 }
 
+/*
+Get the location of the jetcan config file,
+falling back to using "~/.jetcan"
+*/
 func findConfigFile() (string, error) {
 	configFile := os.Getenv("JETCAN_CONFIG")
 	if configFile == "" {
@@ -26,7 +30,12 @@ func findConfigFile() (string, error) {
 	return configFile, nil
 }
 
+/*
+Try to load configuration from json config file
+*/
 func Load() (*Config, error) {
+	var cfg	Config
+
 	configFile, err := findConfigFile()
 	if err != nil {
 		return nil, err
@@ -37,7 +46,6 @@ func Load() (*Config, error) {
 		return nil, err
 	}
 
-	var cfg Config
 	err = json.Unmarshal(f, &cfg)
 	if err != nil {
 		fmt.Println("Error loading config file")

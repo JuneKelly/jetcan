@@ -25,11 +25,13 @@ func getMode(path string) (mode os.FileMode, err error) {
 // Ensure that the storage directory exists under the
 // current users home directory
 func createStorageDir(cfg *config.Config) error {
-	var storageDir	string
-	var parentDir	string
-	var fullPath	string
-	var permissions	os.FileMode
-	var err			error
+	var (
+		storageDir	string
+		parentDir	string
+		fullPath	string
+		permissions	os.FileMode
+		err			error
+	)
 
 	if cfg.StorageDir != "" {
 		storageDir, err = filepath.Abs(cfg.StorageDir)
