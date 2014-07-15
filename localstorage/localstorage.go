@@ -8,6 +8,31 @@ import (
 
 const DEFAULT_DIRECTORY	string = ".jetcan.d"
 
+type LocalStorage struct {
+	Dir		string
+}
+
+func New(cfg *config.Config) (*LocalStorage, error) {
+	l := &LocalStorage{cfg.StorageDir}
+	err := l.Initialize()
+	if err != nil {
+		return nil, err
+	}
+	return l, nil
+}
+
+// Initialize local storage
+func (l *LocalStorage) Initialize() error {
+	var err				error
+
+	err = createStorageDir(l.Dir)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // helper, get the FileMode for a path
 func getMode(path string) (mode os.FileMode, err error) {
 	var fi	os.FileInfo
@@ -24,17 +49,16 @@ func getMode(path string) (mode os.FileMode, err error) {
 
 // Ensure that the storage directory exists under the
 // current users home directory
-func createStorageDir(cfg *config.Config) error {
+func createStorageDir(storageDir string) error {
 	var (
-		storageDir	string
 		parentDir	string
 		fullPath	string
 		permissions	os.FileMode
 		err			error
 	)
 
-	if cfg.StorageDir != "" {
-		storageDir, err = filepath.Abs(cfg.StorageDir)
+	if storageDir != "" {
+		storageDir, err = filepath.Abs(storageDir)
 		if err != nil {
 			return err
 		}
@@ -62,14 +86,3 @@ func createStorageDir(cfg *config.Config) error {
 	return nil
 }
 
-// Initialize local storage
-func Initialize(cfg *config.Config) error {
-	var err				error
-
-	err = createStorageDir(cfg)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}

@@ -10,21 +10,33 @@ import (
 
 type Jetcan struct {
 	Config	*config.Config
+	Storage	*localstorage.LocalStorage
 }
 
 func NewJetcan() (*Jetcan, error) {
-	j := &Jetcan{}
+	var (
+		cfg	*config.Config
+		l	*localstorage.LocalStorage
+		j	*Jetcan
+		err	error
+	)
 
-	cfg, err := config.Load()
+	j = &Jetcan{}
+
+	cfg, err = config.Load()
 	if err != nil {
 		return nil, err
+	} else {
+		j.Config = cfg
 	}
-	j.Config = cfg
 
-	err = localstorage.Initialize(j.Config)
+	l, err = localstorage.New(j.Config)
 	if err != nil {
 		return nil, err
+	} else {
+		j.Storage = l
 	}
+
 	return j, nil
 }
 
@@ -34,7 +46,7 @@ func handler(c *cli.Context) {
 		fmt.Println("ERROR", err)
 		os.Exit(1)
 	}
-	fmt.Println("\nthis is jetcan", jetcan.Config, "\n")
+	fmt.Println("\nthis is jetcan", jetcan.Config, jetcan.Storage, "\n")
 }
 
 func initCliApp() (app *cli.App, err error) {
