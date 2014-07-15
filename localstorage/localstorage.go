@@ -2,11 +2,14 @@ package localstorage
 
 import (
 	"os"
+	"bytes"
+	"io/ioutil"
 	"path/filepath"
 	"github.com/ShaneKilkelly/jetcan/config"
 )
 
 const DEFAULT_DIRECTORY	string = ".jetcan.d"
+const AUTH_TOKEN_FILE = "token"
 
 type LocalStorage struct {
 	RootDir	string
@@ -31,6 +34,29 @@ func (l *LocalStorage) Initialize() error {
 	}
 
 	return nil
+}
+
+func (l *LocalStorage) GetAuthToken() (string, error) {
+	var (
+		tokenFilePath	string
+		content			[]byte
+		token			string
+		err				error
+	)
+
+	tokenFilePath, err = filepath.Abs(
+		filepath.Join(l.RootDir, AUTH_TOKEN_FILE))
+	if err != nil {
+		return "", err
+	}
+	content, err = ioutil.ReadFile(tokenFilePath)
+	if err != nil {
+		return "", err
+	}
+
+	token = string(bytes.Trim(content, "\x00"))
+
+	return token, nil
 }
 
 // helper, get the FileMode for a path

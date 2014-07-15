@@ -47,6 +47,7 @@ func handler(c *cli.Context) {
 		os.Exit(1)
 	}
 	fmt.Println("\nthis is jetcan", jetcan.Config, jetcan.Storage, "\n")
+	fmt.Println(jetcan.Storage.GetAuthToken())
 }
 
 func initCliApp() (app *cli.App, err error) {
