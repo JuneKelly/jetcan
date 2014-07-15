@@ -9,7 +9,7 @@ import (
 const DEFAULT_DIRECTORY	string = ".jetcan.d"
 
 type LocalStorage struct {
-	Dir		string
+	RootDir	string
 }
 
 func New(cfg *config.Config) (*LocalStorage, error) {
@@ -25,7 +25,7 @@ func New(cfg *config.Config) (*LocalStorage, error) {
 func (l *LocalStorage) Initialize() error {
 	var err				error
 
-	err = createStorageDir(l.Dir)
+	err = createStorageDir(l.RootDir)
 	if err != nil {
 		return err
 	}
